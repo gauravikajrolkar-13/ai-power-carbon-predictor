@@ -8,20 +8,14 @@ from pathlib import Path
 
 
 # ============================================================
-# PAGE CONFIGURATION
+# CONFIGURATION
 # ============================================================
 
 st.set_page_config(
-    page_title="AERIS | AI Energy Requirement Intelligence System",
-    page_icon=None,
+    page_title="AERIS",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
-
-# ============================================================
-# PATHS
-# ============================================================
 
 BASE_DIR = Path(__file__).parent
 MODEL_PATH = BASE_DIR / "ai_power_random_forest_model.pkl"
@@ -36,250 +30,278 @@ ASSETS_DIR = BASE_DIR / "assets"
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap');
+/* ---------------------------------------------------------
+   GLOBAL TYPOGRAPHY
+--------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
 }
 
 .stApp {
-    background: #f8f9fb;
-    color: #17202a;
+    background: #fafafa;
+    color: #20252b;
 }
 
 .block-container {
-    padding-top: 2rem;
+    max-width: 1350px;
+    padding-top: 2.5rem;
     padding-bottom: 4rem;
-    max-width: 1400px;
 }
 
 
-/* ---------- HEADER ---------- */
+/* ---------------------------------------------------------
+   HIDE STREAMLIT DEFAULT ELEMENTS
+--------------------------------------------------------- */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
+}
+
+
+/* ---------------------------------------------------------
+   MAIN TITLE
+--------------------------------------------------------- */
 
 .aeris-header {
-    padding: 1.2rem 0 1.8rem 0;
-    border-bottom: 1px solid #e4e7eb;
-    margin-bottom: 1.2rem;
+    text-align: center;
+    padding: 1.2rem 0 1.5rem 0;
 }
 
-.aeris-name {
+.aeris-title {
     font-family: 'Playfair Display', serif;
-    font-size: 2.8rem;
+    font-size: 4rem;
     font-weight: 600;
-    letter-spacing: -1px;
-    margin: 0;
-    color: #17202a;
+    letter-spacing: -1.5px;
+    color: #171b20;
+    line-height: 1;
 }
 
-.aeris-subtitle {
+.aeris-full-name {
+    margin-top: 0.65rem;
     font-size: 1.05rem;
-    color: #667085;
-    margin-top: 0.35rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: #555e68;
 }
 
-.aeris-description {
-    max-width: 900px;
-    color: #667085;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-top: 0.8rem;
-}
-
-
-/* ---------- NAVIGATION ---------- */
-
-div[data-testid="stRadio"] > div {
-    gap: 0.35rem;
-}
-
-div[data-testid="stRadio"] label {
-    background: transparent;
-    border-radius: 7px;
-    padding: 0.45rem 0.75rem;
-    color: #667085;
-    font-size: 0.88rem;
-    border: 1px solid transparent;
-}
-
-div[data-testid="stRadio"] label:hover {
-    background: #eef1f4;
-    color: #17202a;
-}
-
-div[data-testid="stRadio"] label[data-checked="true"] {
-    background: #17202a;
-    color: white;
+.aeris-tagline {
+    margin: 0.6rem auto 0 auto;
+    max-width: 760px;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: #7a828b;
 }
 
 
-/* ---------- SECTION HEADINGS ---------- */
+/* ---------------------------------------------------------
+   NAVIGATION
+--------------------------------------------------------- */
+
+.nav-container {
+    border-top: 1px solid #e6e8eb;
+    border-bottom: 1px solid #e6e8eb;
+    padding: 0.75rem 0;
+    margin-bottom: 2.5rem;
+}
+
+div[data-testid="stHorizontalBlock"] {
+    align-items: center;
+}
+
+
+/* ---------------------------------------------------------
+   SECTION TITLES
+--------------------------------------------------------- */
 
 .section-title {
     font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    margin-top: 1.5rem;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #20252b;
     margin-bottom: 0.35rem;
-    color: #17202a;
 }
 
-.section-subtitle {
-    color: #667085;
-    font-size: 0.92rem;
-    margin-bottom: 1.5rem;
+.section-description {
+    color: #747c85;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.7rem;
 }
 
 
-/* ---------- METRIC CARDS ---------- */
+/* ---------------------------------------------------------
+   CARDS
+--------------------------------------------------------- */
 
-.metric-card {
-    background: white;
-    border: 1px solid #e5e7eb;
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7ea;
     border-radius: 12px;
-    padding: 1.25rem;
-    min-height: 120px;
+    padding: 1.35rem;
 }
 
-.metric-label {
-    color: #667085;
-    font-size: 0.78rem;
+.card-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #69717b;
     text-transform: uppercase;
     letter-spacing: 0.07em;
 }
 
-.metric-value {
-    font-size: 1.75rem;
+.card-value {
+    font-size: 1.7rem;
     font-weight: 600;
-    margin-top: 0.45rem;
-    color: #17202a;
+    color: #20252b;
+    margin-top: 0.4rem;
 }
 
-.metric-note {
-    color: #98a2b3;
+.card-note {
     font-size: 0.76rem;
-    margin-top: 0.3rem;
+    color: #9299a1;
+    margin-top: 0.25rem;
 }
 
 
-/* ---------- INFO CARDS ---------- */
+/* ---------------------------------------------------------
+   PREDICTION PANEL
+--------------------------------------------------------- */
 
-.info-card {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.35rem;
-    height: 100%;
+.prediction-panel {
+    background: #ffffff;
+    border: 1px solid #e1e4e8;
+    border-radius: 15px;
+    padding: 1.7rem;
 }
 
-.info-card h4 {
-    margin-top: 0;
-    color: #17202a;
+.prediction-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    color: #20252b;
+    margin-bottom: 0.3rem;
 }
 
-.info-card p {
-    color: #667085;
-    line-height: 1.65;
-    font-size: 0.9rem;
+.prediction-description {
+    font-size: 0.84rem;
+    color: #7b838d;
+    margin-bottom: 1.4rem;
 }
 
 
-/* ---------- RESULT CARDS ---------- */
+/* ---------------------------------------------------------
+   RESULT CARDS
+--------------------------------------------------------- */
 
 .result-card {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.3rem;
-}
-
-.result-model {
-    color: #667085;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.result-score {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-top: 0.25rem;
-}
-
-.result-best {
-    color: #177245;
-    font-size: 0.78rem;
-    margin-top: 0.25rem;
-}
-
-
-/* ---------- DIVIDERS ---------- */
-
-.soft-divider {
-    height: 1px;
-    background: #e5e7eb;
-    margin: 2rem 0;
-}
-
-
-/* ---------- PREDICTION ---------- */
-
-.prediction-result {
-    background: #17202a;
+    background: #20252b;
     color: white;
-    border-radius: 14px;
-    padding: 1.6rem;
+    border-radius: 13px;
+    padding: 1.45rem;
+    min-height: 145px;
 }
 
-.prediction-label {
-    color: #aeb7c2;
-    font-size: 0.78rem;
+.result-label {
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.09em;
+    color: #aeb5bc;
 }
 
-.prediction-value {
-    font-size: 2.5rem;
+.result-value {
+    font-size: 2.2rem;
     font-weight: 600;
-    margin-top: 0.3rem;
+    margin-top: 0.35rem;
 }
 
-.prediction-unit {
-    color: #c4cad1;
-    font-size: 0.85rem;
+.result-unit {
+    font-size: 0.78rem;
+    color: #b9c0c7;
+    margin-top: 0.15rem;
 }
 
 
-/* ---------- BUTTON ---------- */
+/* ---------------------------------------------------------
+   INFO BOX
+--------------------------------------------------------- */
+
+.info-box {
+    background: #f3f5f7;
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    color: #626b75;
+    font-size: 0.83rem;
+    line-height: 1.65;
+}
+
+
+/* ---------------------------------------------------------
+   DIVIDER
+--------------------------------------------------------- */
+
+.divider {
+    height: 1px;
+    background: #e5e7ea;
+    margin: 2.4rem 0;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTON
+--------------------------------------------------------- */
 
 .stButton > button {
-    border-radius: 8px;
-    border: none;
-    background: #17202a;
+    width: 100%;
+    background: #20252b;
     color: white;
-    padding: 0.65rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 500;
 }
 
 .stButton > button:hover {
-    background: #303b47;
+    background: #353c44;
 }
 
 
-/* ---------- DATAFRAME ---------- */
+/* ---------------------------------------------------------
+   INPUTS
+--------------------------------------------------------- */
 
-[data-testid="stDataFrame"] {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+.stSelectbox label,
+.stNumberInput label {
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    color: #454d56 !important;
+}
+
+.stSelectbox div[data-baseweb="select"] > div {
+    border-radius: 7px;
 }
 
 
-/* ---------- FOOTER ---------- */
+/* ---------------------------------------------------------
+   FOOTER
+--------------------------------------------------------- */
 
 .footer {
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid #e5e7ea;
     margin-top: 4rem;
-    padding-top: 1.2rem;
-    color: #98a2b3;
-    font-size: 0.78rem;
+    padding-top: 1.1rem;
+    text-align: center;
+    font-size: 0.74rem;
+    color: #9aa1a8;
 }
 
 </style>
@@ -304,15 +326,24 @@ model = load_model()
 
 @st.cache_data
 def load_carbon_data():
-    if CARBON_PATH.exists():
-        data = pd.read_csv(CARBON_PATH)
-        return data
 
-    # Fallback values used in the research analysis
+    if CARBON_PATH.exists():
+        return pd.read_csv(CARBON_PATH)
+
     return pd.DataFrame({
-        "Entity": ["France", "Germany", "United States", "India"],
+        "Entity": [
+            "France",
+            "Germany",
+            "United States",
+            "India"
+        ],
         "Year": [2024, 2024, 2024, 2024],
-        "Carbon intensity": [40.48, 336.38, 383.78, 705.40]
+        "Carbon intensity": [
+            40.48,
+            336.38,
+            383.78,
+            705.40
+        ]
     })
 
 
@@ -320,7 +351,7 @@ carbon_data = load_carbon_data()
 
 
 # ============================================================
-# PROJECT RESULTS
+# RESEARCH RESULTS
 # ============================================================
 
 MODEL_RESULTS = pd.DataFrame({
@@ -349,9 +380,27 @@ MODEL_RESULTS = pd.DataFrame({
 
 CV_RESULTS = pd.DataFrame({
     "Fold": [1, 2, 3, 4, 5],
-    "MAE (W)": [480.96, 425.75, 394.60, 323.29, 317.87],
-    "RMSE (W)": [885.60, 703.10, 726.70, 613.79, 621.86],
-    "R²": [0.8393, 0.8719, 0.8433, 0.8815, 0.9032]
+    "MAE (W)": [
+        480.96,
+        425.75,
+        394.60,
+        323.29,
+        317.87
+    ],
+    "RMSE (W)": [
+        885.60,
+        703.10,
+        726.70,
+        613.79,
+        621.86
+    ],
+    "R²": [
+        0.8393,
+        0.8719,
+        0.8433,
+        0.8815,
+        0.9032
+    ]
 })
 
 
@@ -407,12 +456,7 @@ SHAP_RESULTS = pd.DataFrame({
         "missingindicator_image_size",
         "model_size",
         "parallelization_Not_Applicable",
-        "missingindicator_model_size",
-        "parallelization_ZeRO-1",
-        "missingindicator_num_layers",
-        "parallelization_ZeRO-2",
-        "workload_Feature Forecasting",
-        "num_layers"
+        "missingindicator_model_size"
     ],
     "Mean Absolute SHAP": [
         946.187484,
@@ -429,12 +473,7 @@ SHAP_RESULTS = pd.DataFrame({
         27.717738,
         25.748512,
         24.359839,
-        24.006272,
-        4.424313,
-        4.088312,
-        2.507303,
-        2.388078,
-        1.849083
+        24.006272
     ]
 })
 
@@ -461,23 +500,22 @@ FEATURE_DEFINITIONS = pd.DataFrame({
         "input_type",
         "parallelization"
     ],
-    "Role": ["Model predictor"] * 15,
     "Description": [
-        "Type of AI training workload.",
-        "GPU hardware platform.",
-        "Number of GPUs used.",
-        "Number of samples processed in a batch.",
-        "Approximate model size / parameter scale.",
-        "Input image resolution.",
-        "Input sequence or cutoff length.",
-        "Neural network layer size.",
-        "Number of model layers.",
-        "Embedding dimensionality.",
-        "Number of hidden units.",
-        "Number of convolutional filters.",
-        "Training optimizer.",
-        "Input representation type.",
-        "Distributed training parallelization strategy."
+        "AI training workload type",
+        "GPU hardware platform",
+        "Number of GPUs",
+        "Training batch size",
+        "Model parameter scale",
+        "Input image resolution",
+        "Input sequence or cutoff length",
+        "Neural network layer size",
+        "Number of model layers",
+        "Embedding dimensionality",
+        "Number of hidden units",
+        "Number of convolutional filters",
+        "Training optimizer",
+        "Input representation",
+        "Distributed training strategy"
     ]
 })
 
@@ -488,15 +526,20 @@ FEATURE_DEFINITIONS = pd.DataFrame({
 
 st.markdown("""
 <div class="aeris-header">
-    <div class="aeris-name">AERIS</div>
-    <div class="aeris-subtitle">
+
+    <div class="aeris-title">
+        AERIS
+    </div>
+
+    <div class="aeris-full-name">
         AI Energy Requirement Intelligence System
     </div>
-    <div class="aeris-description">
-        Predicting AI training power consumption from workload configuration
-        and hardware characteristics using machine learning and deep learning,
-        with downstream carbon-footprint scenario analysis.
+
+    <div class="aeris-tagline">
+        Predicting AI training power consumption from workload and hardware
+        characteristics, with downstream energy and carbon-footprint estimation.
     </div>
+
 </div>
 """, unsafe_allow_html=True)
 
@@ -505,144 +548,571 @@ st.markdown("""
 # NAVIGATION
 # ============================================================
 
-pages = [
-    "Overview",
-    "Data & Features",
-    "Model Results",
-    "Interpretation",
-    "Prediction",
-    "Carbon Analysis",
-    "About"
+if "page" not in st.session_state:
+    st.session_state.page = "Overview"
+
+
+st.markdown('<div class="nav-container">', unsafe_allow_html=True)
+
+nav_columns = st.columns(5)
+
+navigation = [
+    ("Overview", nav_columns[0]),
+    ("Data & Features", nav_columns[1]),
+    ("Model Results", nav_columns[2]),
+    ("Interpretation", nav_columns[3]),
+    ("About", nav_columns[4])
 ]
 
-page = st.radio(
-    "Navigation",
-    pages,
-    horizontal=True,
-    label_visibility="collapsed"
-)
+for name, column in navigation:
+
+    with column:
+
+        if st.button(
+            name,
+            key=f"nav_{name}",
+            use_container_width=True
+        ):
+            st.session_state.page = name
+            st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+page = st.session_state.page
 
 
 # ============================================================
-# OVERVIEW
+# OVERVIEW / PREDICTION
 # ============================================================
 
 if page == "Overview":
 
     st.markdown(
-        '<div class="section-title">Research Overview</div>',
+        '<div class="section-title">AI Workload Estimator</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="section-subtitle">'
-        'A predictive framework for estimating the power requirements of AI training workloads.'
+        '<div class="section-description">'
+        'Configure an AI training workload and estimate its power, energy '
+        'requirements and associated carbon emissions.'
         '</div>',
         unsafe_allow_html=True
     )
 
-    c1, c2, c3, c4 = st.columns(4)
-
-    with c1:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-label">Clean observations</div>
-            <div class="metric-value">6,480</div>
-            <div class="metric-note">After duplicate removal</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c2:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-label">Training sessions</div>
-            <div class="metric-value">72</div>
-            <div class="metric-note">Grouped validation units</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c3:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-label">Best R²</div>
-            <div class="metric-value">0.847</div>
-            <div class="metric-note">Random Forest</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c4:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-label">Test-set energy</div>
-            <div class="metric-value">7.10 kWh</div>
-            <div class="metric-note">1,350 test windows</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-    left, right = st.columns([1.25, 1])
-
-    with left:
-        st.markdown("""
-        <div class="info-card">
-            <h4>Research Question</h4>
-            <p>
-            How accurately can machine learning and deep learning models
-            predict the power consumption of AI training workloads from
-            workload configuration and hardware characteristics?
-            </p>
-
-            <p>
-            The predicted power is subsequently converted into estimated
-            energy consumption and evaluated under different electricity
-            carbon-intensity scenarios.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with right:
-        st.markdown("""
-        <div class="info-card">
-            <h4>Prediction Pipeline</h4>
-            <p>
-            Workload configuration + hardware
-            → predictive model
-            → mean power (W)
-            → energy (kWh)
-            → electricity carbon intensity
-            → estimated CO₂e.
-            </p>
-
-            <p>
-            Carbon emissions are a downstream scenario calculation rather
-            than the direct prediction target.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
     st.markdown(
-        '<div class="section-title">Key Findings</div>',
+        '<div class="prediction-panel">',
         unsafe_allow_html=True
     )
 
-    findings = [
-        "Random Forest achieved the strongest overall performance among the three evaluated models.",
-        "Hardware type and number of GPUs were the dominant predictive features.",
-        "The model captured major differences between low-power single-GPU workloads and high-power multi-GPU workloads.",
-        "Prediction errors were substantially larger for high-power LLM and Image Generation workloads.",
-        "The configuration-only model cannot capture fine-grained temporal changes within an individual training session.",
-        "The same predicted energy demand can correspond to substantially different estimated emissions depending on electricity carbon intensity."
-    ]
+    st.markdown(
+        '<div class="prediction-heading">Workload Configuration</div>',
+        unsafe_allow_html=True
+    )
 
-    for finding in findings:
+    st.markdown(
+        '<div class="prediction-description">'
+        'Select a configuration represented in the training dataset.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        workload = st.selectbox(
+            "AI Workload",
+            [
+                "Feature Forecasting",
+                "Reinforcement Learning",
+                "Image Classification",
+                "Text Generation",
+                "Image Captioning",
+                "Image Generation",
+                "LLM"
+            ]
+        )
+
+    with col2:
+
+        hardware = st.selectbox(
+            "Hardware",
+            ["RTX3060", "H100", "B200"]
+        )
+
+    with col3:
+
+        num_gpus = 1 if hardware == "RTX3060" else 8
+
+        st.number_input(
+            "Number of GPUs",
+            value=num_gpus,
+            disabled=True
+        )
+
+    batch_options = {
+        "Feature Forecasting": [50, 100, 150],
+        "Reinforcement Learning": [150, 250, 350],
+        "Image Classification": [750, 1500, 2250],
+        "Text Generation": [32, 128, 512],
+        "Image Captioning": [128, 256, 1024],
+        "Image Generation": [128, 256, 512],
+        "LLM": [2, 16, 32]
+    }
+
+    batch_size = st.selectbox(
+        "Batch Size",
+        batch_options[workload]
+    )
+
+    st.markdown("")
+
+    col1, col2, col3 = st.columns(3)
+
+    model_size = np.nan
+    image_size = np.nan
+    sequence_length = np.nan
+    layer_size = np.nan
+    num_layers = np.nan
+    embedding_dim = np.nan
+    hidden_units = np.nan
+    num_filters = np.nan
+    optimizer = "Not_Applicable"
+    input_type = "Not_Applicable"
+    parallelization = "Not_Applicable"
+
+    with col1:
+
+        if workload == "Feature Forecasting":
+
+            model_size = st.selectbox(
+                "Model Size",
+                [474000, 1600000, 3600000],
+                format_func=lambda x: f"{x / 1e6:g}M parameters"
+            )
+
+        elif workload == "Image Generation":
+
+            model_size = st.selectbox(
+                "Model Size",
+                [107000000, 430000000, 1700000000],
+                format_func=lambda x: f"{x / 1e6:g}M parameters"
+            )
+
+        elif workload == "LLM":
+
+            model_size = st.selectbox(
+                "Model Size",
+                [1000000000, 3000000000, 8000000000],
+                format_func=lambda x: f"{x / 1e9:g}B parameters"
+            )
+
+        elif workload == "Reinforcement Learning":
+
+            layer_size = st.selectbox(
+                "Layer Size",
+                [256, 512, 1024]
+            )
+
+        elif workload == "Image Captioning":
+
+            layer_size = st.selectbox(
+                "Layer Size",
+                [512, 1024, 2048]
+            )
+
+        elif workload == "Text Generation":
+
+            sequence_length = st.selectbox(
+                "Sequence Length",
+                [100, 250, 500]
+            )
+
+        elif workload == "Image Classification":
+
+            image_size = st.selectbox(
+                "Image Size",
+                [112, 224, 280]
+            )
+
+    with col2:
+
+        if workload == "Feature Forecasting":
+
+            sequence_length = st.selectbox(
+                "Sequence Length",
+                [96, 192, 672]
+            )
+
+        elif workload == "Reinforcement Learning":
+
+            sequence_length = st.selectbox(
+                "Sequence Length",
+                [150, 250, 350]
+            )
+
+        elif workload == "Image Classification":
+
+            num_filters = st.selectbox(
+                "Number of Filters",
+                [8, 16, 32]
+            )
+
+        elif workload == "Text Generation":
+
+            embedding_dim = st.selectbox(
+                "Embedding Dimension",
+                [100, 300, 1000]
+            )
+
+        elif workload == "Image Captioning":
+
+            embedding_dim = st.selectbox(
+                "Embedding Dimension",
+                [256, 512, 1024]
+            )
+
+        elif workload == "Image Generation":
+
+            image_size = st.selectbox(
+                "Image Size",
+                [32, 64, 128]
+            )
+
+        elif workload == "LLM":
+
+            sequence_length = st.selectbox(
+                "Sequence Length",
+                [1024, 2048, 4096]
+            )
+
+    with col3:
+
+        if workload == "Feature Forecasting":
+
+            num_layers = st.selectbox(
+                "Number of Layers",
+                [6, 8, 10]
+            )
+
+        elif workload == "Reinforcement Learning":
+
+            input_type = st.selectbox(
+                "Input Type",
+                ["Feature", "Sequence"]
+            )
+
+        elif workload == "Image Classification":
+
+            optimizer = st.selectbox(
+                "Optimizer",
+                ["Adam", "SGD", "RMS"]
+            )
+
+        elif workload == "LLM":
+
+            parallelization = st.selectbox(
+                "Parallelization",
+                ["ZeRO-1", "ZeRO-2", "ZeRO-3"]
+            )
+
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+
+        duration_minutes = st.number_input(
+            "Estimated Runtime (minutes)",
+            min_value=0.1,
+            max_value=1440.0,
+            value=15.0,
+            step=1.0
+        )
+
+    with col2:
+
         st.markdown(
-            f'<div style="margin:0.65rem 0;color:#475467;font-size:0.92rem;">'
-            f'• {finding}</div>',
+            '<div class="info-box">'
+            'AERIS predicts mean power for a 10-second measurement window. '
+            'Runtime is used only to derive energy consumption and carbon '
+            'emissions. The calculation assumes predicted mean power remains '
+            'constant throughout the selected runtime.'
+            '</div>',
             unsafe_allow_html=True
         )
+
+    st.markdown("")
+
+    run_prediction = st.button(
+        "Run AERIS",
+        use_container_width=True
+    )
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # --------------------------------------------------------
+    # PREDICTION
+    # --------------------------------------------------------
+
+    if run_prediction:
+
+        input_data = pd.DataFrame([{
+            "workload": workload,
+            "hardware": hardware,
+            "num_gpus": num_gpus,
+            "batch_size": batch_size,
+            "model_size": model_size,
+            "image_size": image_size,
+            "sequence_length": sequence_length,
+            "layer_size": layer_size,
+            "num_layers": num_layers,
+            "embedding_dim": embedding_dim,
+            "hidden_units": hidden_units,
+            "num_filters": num_filters,
+            "optimizer": optimizer,
+            "input_type": input_type,
+            "parallelization": parallelization
+        }])
+
+        try:
+
+            predicted_power = float(
+                model.predict(input_data)[0]
+            )
+
+            energy_kwh = (
+                predicted_power
+                * duration_minutes
+                / 60
+                / 1000
+            )
+
+            # Default carbon scenario
+            country = "India"
+
+            country_rows = carbon_data[
+                carbon_data["Entity"] == country
+            ]
+
+            if len(country_rows) > 0:
+
+                carbon_intensity = float(
+                    country_rows.iloc[0]["Carbon intensity"]
+                )
+
+            else:
+
+                carbon_intensity = 705.40
+
+            emissions = (
+                energy_kwh
+                * carbon_intensity
+                / 1000
+            )
+
+            st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+            st.markdown(
+                '<div class="section-title">AERIS Estimation</div>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                '<div class="section-description">'
+                'Power is predicted by the Random Forest model. Energy and '
+                'carbon are calculated from the predicted power.'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            r1, r2, r3 = st.columns(3)
+
+            with r1:
+
+                st.markdown(
+                    f"""
+                    <div class="result-card">
+                        <div class="result-label">
+                            Predicted Power
+                        </div>
+                        <div class="result-value">
+                            {predicted_power:,.1f}
+                        </div>
+                        <div class="result-unit">
+                            watts · mean power
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with r2:
+
+                st.markdown(
+                    f"""
+                    <div class="result-card">
+                        <div class="result-label">
+                            Estimated Energy
+                        </div>
+                        <div class="result-value">
+                            {energy_kwh:,.3f}
+                        </div>
+                        <div class="result-unit">
+                            kWh · {duration_minutes:g} minutes
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with r3:
+
+                st.markdown(
+                    f"""
+                    <div class="result-card">
+                        <div class="result-label">
+                            Estimated Carbon
+                        </div>
+                        <div class="result-value">
+                            {emissions:,.3f}
+                        </div>
+                        <div class="result-unit">
+                            kg CO₂e · {country}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+            # ------------------------------------------------
+            # CARBON SCENARIO
+            # ------------------------------------------------
+
+            st.markdown("### Carbon Scenario")
+
+            carbon_col1, carbon_col2 = st.columns(2)
+
+            with carbon_col1:
+
+                available_countries = sorted(
+                    carbon_data["Entity"].dropna().unique().tolist()
+                )
+
+                selected_country = st.selectbox(
+                    "Electricity Grid",
+                    available_countries,
+                    index=(
+                        available_countries.index("India")
+                        if "India" in available_countries
+                        else 0
+                    )
+                )
+
+            with carbon_col2:
+
+                selected_rows = carbon_data[
+                    carbon_data["Entity"] == selected_country
+                ]
+
+                if len(selected_rows) > 0:
+
+                    selected_intensity = float(
+                        selected_rows.iloc[0]["Carbon intensity"]
+                    )
+
+                else:
+
+                    selected_intensity = 705.40
+
+                selected_emissions = (
+                    energy_kwh
+                    * selected_intensity
+                    / 1000
+                )
+
+                st.markdown(
+                    f"""
+                    <div class="card">
+                        <div class="card-title">
+                            Estimated CO₂e
+                        </div>
+                        <div class="card-value">
+                            {selected_emissions:.3f} kg
+                        </div>
+                        <div class="card-note">
+                            {selected_intensity:.2f} gCO₂e/kWh
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            st.caption(
+                "Carbon intensity values represent annual 2024 electricity "
+                "carbon intensity. They are scenario values, not real-time "
+                "grid intensity."
+            )
+
+        except Exception as error:
+
+            st.error(
+                "AERIS could not generate a prediction for this configuration."
+            )
+
+            st.exception(error)
+
+    # --------------------------------------------------------
+    # RESEARCH SNAPSHOT
+    # --------------------------------------------------------
+
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="section-title">Research Snapshot</div>',
+        unsafe_allow_html=True
+    )
+
+    snapshot1, snapshot2, snapshot3, snapshot4 = st.columns(4)
+
+    with snapshot1:
+        st.markdown("""
+        <div class="card">
+            <div class="card-title">Observations</div>
+            <div class="card-value">6,480</div>
+            <div class="card-note">Clean observations</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with snapshot2:
+        st.markdown("""
+        <div class="card">
+            <div class="card-title">Sessions</div>
+            <div class="card-value">72</div>
+            <div class="card-note">Training sessions</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with snapshot3:
+        st.markdown("""
+        <div class="card">
+            <div class="card-title">Best R²</div>
+            <div class="card-value">0.847</div>
+            <div class="card-note">Random Forest</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with snapshot4:
+        st.markdown("""
+        <div class="card">
+            <div class="card-title">CV R²</div>
+            <div class="card-value">0.868</div>
+            <div class="card-note">5-fold grouped CV</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # ============================================================
@@ -657,58 +1127,37 @@ elif page == "Data & Features":
     )
 
     st.markdown(
-        '<div class="section-subtitle">'
-        'Structure, predictors, exploratory analysis and preprocessing decisions.'
+        '<div class="section-description">'
+        'The dataset, predictor structure and exploratory findings behind AERIS.'
         '</div>',
         unsafe_allow_html=True
     )
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        st.metric("Original observations", "8,550")
+        st.metric("Original rows", "8,550")
 
     with c2:
-        st.metric("Clean observations", "6,480")
+        st.metric("Clean rows", "6,480")
 
     with c3:
-        st.metric("Unique sessions", "72")
+        st.metric("Sessions", "72")
 
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
+    with c4:
+        st.metric("Workloads", "7")
+
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     st.markdown("### Dataset")
 
     st.write(
-        "The dataset contains high-resolution measurements of AI training "
-        "workloads across RTX3060, H100 and B200 GPU platforms. Each training "
-        "session contains 90 ten-second windows representing approximately "
-        "15 minutes of activity."
+        "The dataset contains high-resolution AI training workload measurements "
+        "from RTX3060, H100 and B200 GPU systems. Each session contains 90 "
+        "approximately ten-second windows representing a 15-minute training session."
     )
 
-    dataset_info = pd.DataFrame({
-        "Property": [
-            "Target",
-            "Predictor count",
-            "Workloads",
-            "Hardware platforms",
-            "Observations after cleaning",
-            "Sessions",
-            "Window duration"
-        ],
-        "Value": [
-            "mean_power_W",
-            "15",
-            "7",
-            "3",
-            "6,480",
-            "72",
-            "10 seconds"
-        ]
-    })
-
-    st.dataframe(dataset_info, use_container_width=True, hide_index=True)
-
-    st.markdown("### Predictor Dictionary")
+    st.markdown("### Predictor Variables")
 
     st.dataframe(
         FEATURE_DEFINITIONS,
@@ -716,60 +1165,78 @@ elif page == "Data & Features":
         hide_index=True
     )
 
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-    st.markdown("### Power by Workload")
+    col1, col2 = st.columns(2)
 
-    fig = px.bar(
-        WORKLOAD_RESULTS.sort_values("Mean Power (W)", ascending=True),
-        x="Mean Power (W)",
-        y="Workload",
-        orientation="h",
-        template="simple_white"
-    )
+    with col1:
 
-    fig.update_layout(
-        height=430,
-        margin=dict(l=10, r=10, t=20, b=20),
-        xaxis_title="Mean Power (W)",
-        yaxis_title=""
-    )
+        st.markdown("### Mean Power by Workload")
 
-    st.plotly_chart(fig, use_container_width=True)
+        fig = px.bar(
+            WORKLOAD_RESULTS.sort_values(
+                "Mean Power (W)",
+                ascending=True
+            ),
+            x="Mean Power (W)",
+            y="Workload",
+            orientation="h",
+            template="simple_white"
+        )
 
-    st.markdown("### Power by Hardware")
+        fig.update_layout(
+            height=430,
+            margin=dict(l=10, r=10, t=10, b=10),
+            xaxis_title="Mean Power (W)",
+            yaxis_title=""
+        )
 
-    fig = px.bar(
-        HARDWARE_RESULTS.sort_values("Mean Power (W)", ascending=True),
-        x="Mean Power (W)",
-        y="Hardware",
-        orientation="h",
-        template="simple_white"
-    )
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
-    fig.update_layout(
-        height=300,
-        margin=dict(l=10, r=10, t=20, b=20),
-        xaxis_title="Mean Power (W)",
-        yaxis_title=""
-    )
+    with col2:
 
-    st.plotly_chart(fig, use_container_width=True)
+        st.markdown("### Mean Power by Hardware")
+
+        fig = px.bar(
+            HARDWARE_RESULTS.sort_values(
+                "Mean Power (W)",
+                ascending=True
+            ),
+            x="Mean Power (W)",
+            y="Hardware",
+            orientation="h",
+            template="simple_white"
+        )
+
+        fig.update_layout(
+            height=430,
+            margin=dict(l=10, r=10, t=10, b=10),
+            xaxis_title="Mean Power (W)",
+            yaxis_title=""
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
     st.markdown("### Preprocessing")
 
     preprocessing = pd.DataFrame({
-        "Step": [
-            "Exact duplicates",
+        "Stage": [
+            "Duplicate handling",
             "Numerical missing values",
             "Categorical missing values",
             "Categorical encoding",
-            "Numerical scaling",
-            "Train-test split"
+            "Scaling",
+            "Data splitting"
         ],
         "Method": [
-            "Removed",
-            "Median imputation + missing indicators",
+            "Exact duplicate removal",
+            "Median imputation + indicators",
             "Not Applicable category",
             "One-hot encoding",
             "StandardScaler for MLP",
@@ -781,12 +1248,6 @@ elif page == "Data & Features":
         preprocessing,
         use_container_width=True,
         hide_index=True
-    )
-
-    st.info(
-        "The model uses configuration-level predictors only. Runtime power, "
-        "GPU utilisation and other measured power variables are excluded "
-        "from the predictive feature set to avoid target leakage."
     )
 
 
@@ -802,48 +1263,13 @@ elif page == "Model Results":
     )
 
     st.markdown(
-        '<div class="section-subtitle">'
+        '<div class="section-description">'
         'Comparative evaluation of conventional machine learning and deep learning.'
         '</div>',
         unsafe_allow_html=True
     )
 
-    best_model = MODEL_RESULTS.loc[
-        MODEL_RESULTS["R²"].idxmax()
-    ]
-
-    c1, c2, c3 = st.columns(3)
-
-    with c1:
-        st.markdown("""
-        <div class="result-card">
-            <div class="result-model">Best Model</div>
-            <div class="result-score">Random Forest</div>
-            <div class="result-best">Highest test-set R²</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c2:
-        st.markdown("""
-        <div class="result-card">
-            <div class="result-model">R²</div>
-            <div class="result-score">0.8470</div>
-            <div class="result-best">Explained variance</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c3:
-        st.markdown("""
-        <div class="result-card">
-            <div class="result-model">RMSE</div>
-            <div class="result-score">797.74 W</div>
-            <div class="result-best">Test-set performance</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-    st.markdown("### Model Comparison")
+    st.markdown("### Performance Comparison")
 
     st.dataframe(
         MODEL_RESULTS.style.format({
@@ -855,53 +1281,68 @@ elif page == "Model Results":
         hide_index=True
     )
 
-    fig = go.Figure()
+    col1, col2 = st.columns(2)
 
-    fig.add_trace(go.Bar(
-        name="MAE",
-        x=MODEL_RESULTS["Model"],
-        y=MODEL_RESULTS["MAE (W)"]
-    ))
+    with col1:
 
-    fig.add_trace(go.Bar(
-        name="RMSE",
-        x=MODEL_RESULTS["Model"],
-        y=MODEL_RESULTS["RMSE (W)"]
-    ))
+        fig = go.Figure()
 
-    fig.update_layout(
-        barmode="group",
-        template="simple_white",
-        height=420,
-        yaxis_title="Error (W)",
-        xaxis_title=""
-    )
+        fig.add_trace(
+            go.Bar(
+                name="MAE",
+                x=MODEL_RESULTS["Model"],
+                y=MODEL_RESULTS["MAE (W)"]
+            )
+        )
 
-    st.plotly_chart(fig, use_container_width=True)
+        fig.add_trace(
+            go.Bar(
+                name="RMSE",
+                x=MODEL_RESULTS["Model"],
+                y=MODEL_RESULTS["RMSE (W)"]
+            )
+        )
 
-    fig = px.bar(
-        MODEL_RESULTS,
-        x="Model",
-        y="R²",
-        template="simple_white"
-    )
+        fig.update_layout(
+            barmode="group",
+            template="simple_white",
+            height=400,
+            yaxis_title="Error (W)",
+            xaxis_title=""
+        )
 
-    fig.update_layout(
-        height=350,
-        yaxis_title="R²",
-        xaxis_title=""
-    )
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
-    st.plotly_chart(fig, use_container_width=True)
+    with col2:
 
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
+        fig = px.bar(
+            MODEL_RESULTS,
+            x="Model",
+            y="R²",
+            template="simple_white"
+        )
 
-    st.markdown("### 5-Fold Group Cross-Validation")
+        fig.update_layout(
+            height=400,
+            yaxis_title="R²",
+            xaxis_title=""
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
+
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+    st.markdown("### Grouped Cross-Validation")
 
     st.write(
-        "Cross-validation was performed by training session rather than by "
-        "individual observation. This prevents windows from the same training "
-        "session appearing in both training and validation folds."
+        "The Random Forest was evaluated using five grouped folds, with "
+        "training sessions kept separate between folds."
     )
 
     st.dataframe(
@@ -925,22 +1366,20 @@ elif page == "Model Results":
     with c3:
         st.metric("Mean CV R²", "0.8678")
 
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     st.markdown("### Model Selection")
 
     st.write(
-        "Random Forest was selected as the final predictive model because it "
-        "achieved the best test-set performance across MAE, RMSE and R². "
-        "The MLP deep learning model performed below both conventional models, "
-        "which is a useful empirical result for this structured tabular dataset."
+        "Random Forest achieved the strongest overall test-set performance. "
+        "It outperformed both Linear Regression and the MLP deep learning model "
+        "on MAE, RMSE and R²."
     )
 
     st.info(
-        "The deep learning model was retained as a genuine comparison model. "
-        "Its lower performance does not invalidate the experiment; it demonstrates "
-        "that greater model complexity does not automatically produce better "
-        "predictions for structured tabular data."
+        "The MLP result is an important finding rather than a failure. "
+        "For this structured tabular dataset, the more complex deep learning "
+        "model did not outperform the conventional ensemble model."
     )
 
 
@@ -951,24 +1390,30 @@ elif page == "Model Results":
 elif page == "Interpretation":
 
     st.markdown(
-        '<div class="section-title">Model Interpretation</div>',
+        '<div class="section-title">Interpretation</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="section-subtitle">'
-        'Understanding which predictors matter most to the Random Forest model.'
+        '<div class="section-description">'
+        'Understanding the predictors that contribute most strongly to AERIS predictions.'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown("### SHAP Feature Importance")
 
-    shap_plot = ASSETS_DIR / "shap_importance.png"
+    shap_image = ASSETS_DIR / "shap_importance.png"
 
-    if shap_plot.exists():
-        st.image(str(shap_plot), use_container_width=True)
+    if shap_image.exists():
+
+        st.image(
+            str(shap_image),
+            use_container_width=True
+        )
+
     else:
+
         top_shap = SHAP_RESULTS.head(10).sort_values(
             "Mean Absolute SHAP",
             ascending=True
@@ -983,510 +1428,44 @@ elif page == "Interpretation":
         )
 
         fig.update_layout(
-            height=480,
+            height=450,
             xaxis_title="Mean Absolute SHAP Value",
             yaxis_title=""
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
-    st.markdown("### Numerical SHAP Results")
+    st.markdown("### Main Findings")
+
+    st.write(
+        "Hardware type and number of GPUs are the two dominant predictive "
+        "features. Image size also has substantial predictive influence, "
+        "followed by batch size and several workload and configuration variables."
+    )
+
+    st.markdown(
+        '<div class="info-box">'
+        '<strong>Interpretation caution:</strong> Feature importance represents '
+        'predictive usefulness within this dataset. It should not be interpreted '
+        'as proof that changing a feature independently will cause a particular '
+        'change in power consumption.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+    st.markdown("### SHAP Results")
 
     st.dataframe(
-        SHAP_RESULTS.head(15).style.format({
+        SHAP_RESULTS.style.format({
             "Mean Absolute SHAP": "{:.3f}"
         }),
         use_container_width=True,
         hide_index=True
-    )
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-    st.markdown("### What the Model Learned")
-
-    interpretation = [
-        "Hardware type is the strongest predictive factor.",
-        "Number of GPUs is almost equally influential because the dataset contains fundamentally different single-GPU and multi-GPU configurations.",
-        "Image size is the next major configuration-level predictor.",
-        "Batch size has measurable predictive influence, although its relationship with power should not be interpreted as causal.",
-        "Workload type contributes additional information beyond hardware configuration.",
-        "The model's feature importance represents predictive usefulness, not causal influence."
-    ]
-
-    for item in interpretation:
-        st.markdown(
-            f'<div style="margin:0.7rem 0;color:#475467;">• {item}</div>',
-            unsafe_allow_html=True
-        )
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-    st.markdown("### Important Limitation")
-
-    st.warning(
-        "Hardware and workload characteristics are not perfectly crossed in "
-        "the dataset. Consequently, feature importance should not be interpreted "
-        "as evidence that changing one feature alone will cause a specific change "
-        "in power consumption."
-    )
-
-
-# ============================================================
-# PREDICTION
-# ============================================================
-
-elif page == "Prediction":
-
-    st.markdown(
-        '<div class="section-title">AERIS Prediction</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section-subtitle">'
-        'Configure an AI workload and estimate its mean training power requirement.'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        workload = st.selectbox(
-            "AI Workload",
-            [
-                "Feature Forecasting",
-                "Reinforcement Learning",
-                "Image Classification",
-                "Text Generation",
-                "Image Captioning",
-                "Image Generation",
-                "LLM"
-            ]
-        )
-
-        hardware = st.selectbox(
-            "Hardware",
-            ["RTX3060", "H100", "B200"]
-        )
-
-        default_gpus = 1 if hardware == "RTX3060" else 8
-
-        num_gpus = st.number_input(
-            "Number of GPUs",
-            min_value=default_gpus,
-            max_value=default_gpus,
-            value=default_gpus,
-            disabled=True
-        )
-
-        batch_options = {
-            "Feature Forecasting": [50, 100, 150],
-            "Reinforcement Learning": [150, 250, 350],
-            "Image Classification": [750, 1500, 2250],
-            "Text Generation": [32, 128, 512],
-            "Image Captioning": [128, 256, 1024],
-            "Image Generation": [128, 256, 512],
-            "LLM": [2, 16, 32]
-        }
-
-        batch_size = st.selectbox(
-            "Batch Size",
-            batch_options[workload]
-        )
-
-    with col2:
-
-        model_size = np.nan
-        image_size = np.nan
-        sequence_length = np.nan
-        layer_size = np.nan
-        num_layers = np.nan
-        embedding_dim = np.nan
-        hidden_units = np.nan
-        num_filters = np.nan
-        optimizer = "Not_Applicable"
-        input_type = "Not_Applicable"
-        parallelization = "Not_Applicable"
-
-        if workload == "Feature Forecasting":
-
-            model_size = st.selectbox(
-                "Model Size",
-                [474000, 1600000, 3600000],
-                format_func=lambda x: f"{x / 1e6:g}M parameters"
-            )
-
-            sequence_length = st.selectbox(
-                "Sequence Length",
-                [96, 192, 672]
-            )
-
-            num_layers = st.selectbox(
-                "Number of Layers",
-                [6, 8, 10]
-            )
-
-        elif workload == "Reinforcement Learning":
-
-            layer_size = st.selectbox(
-                "Layer Size",
-                [256, 512, 1024]
-            )
-
-            sequence_length = st.selectbox(
-                "Sequence Length",
-                [150, 250, 350]
-            )
-
-            input_type = st.selectbox(
-                "Input Type",
-                ["Feature", "Sequence"]
-            )
-
-        elif workload == "Image Classification":
-
-            image_size = st.selectbox(
-                "Image Size",
-                [112, 224, 280]
-            )
-
-            num_filters = st.selectbox(
-                "Number of Filters",
-                [8, 16, 32]
-            )
-
-            optimizer = st.selectbox(
-                "Optimizer",
-                ["Adam", "SGD", "RMS"]
-            )
-
-        elif workload == "Text Generation":
-
-            sequence_length = st.selectbox(
-                "Sequence Length",
-                [100, 250, 500]
-            )
-
-            embedding_dim = st.selectbox(
-                "Embedding Dimension",
-                [100, 300, 1000]
-            )
-
-        elif workload == "Image Captioning":
-
-            layer_size = st.selectbox(
-                "Layer Size",
-                [512, 1024, 2048]
-            )
-
-            embedding_dim = st.selectbox(
-                "Embedding Dimension",
-                [256, 512, 1024]
-            )
-
-        elif workload == "Image Generation":
-
-            image_size = st.selectbox(
-                "Image Size",
-                [32, 64, 128]
-            )
-
-            model_size = st.selectbox(
-                "Model Size",
-                [107000000, 430000000, 1700000000],
-                format_func=lambda x: f"{x / 1e6:g}M parameters"
-            )
-
-        elif workload == "LLM":
-
-            parallelization = st.selectbox(
-                "Parallelization",
-                ["ZeRO-1", "ZeRO-2", "ZeRO-3"]
-            )
-
-            sequence_length = st.selectbox(
-                "Sequence Length",
-                [1024, 2048, 4096]
-            )
-
-            model_size = st.selectbox(
-                "Model Size",
-                [1000000000, 3000000000, 8000000000],
-                format_func=lambda x: f"{x / 1e9:g}B parameters"
-            )
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-    st.markdown("### Estimation Horizon")
-
-    duration_minutes = st.number_input(
-        "Estimated runtime (minutes)",
-        min_value=0.1,
-        max_value=1440.0,
-        value=15.0,
-        step=1.0
-    )
-
-    st.caption(
-        "The trained model predicts mean power for the dataset's 10-second "
-        "measurement window. The selected runtime is used only for downstream "
-        "energy estimation and assumes predicted mean power remains constant."
-    )
-
-    input_data = pd.DataFrame([{
-        "workload": workload,
-        "hardware": hardware,
-        "num_gpus": num_gpus,
-        "batch_size": batch_size,
-        "model_size": model_size,
-        "image_size": image_size,
-        "sequence_length": sequence_length,
-        "layer_size": layer_size,
-        "num_layers": num_layers,
-        "embedding_dim": embedding_dim,
-        "hidden_units": hidden_units,
-        "num_filters": num_filters,
-        "optimizer": optimizer,
-        "input_type": input_type,
-        "parallelization": parallelization
-    }])
-
-    if st.button("Run AERIS Prediction", use_container_width=True):
-
-        try:
-
-            predicted_power = float(model.predict(input_data)[0])
-
-            energy_kwh = (
-                predicted_power
-                * (duration_minutes / 60)
-                / 1000
-            )
-
-            st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-            r1, r2 = st.columns(2)
-
-            with r1:
-                st.markdown(f"""
-                <div class="prediction-result">
-                    <div class="prediction-label">
-                        Predicted Mean Power
-                    </div>
-                    <div class="prediction-value">
-                        {predicted_power:,.1f}
-                    </div>
-                    <div class="prediction-unit">
-                        watts
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-            with r2:
-                st.markdown(f"""
-                <div class="prediction-result">
-                    <div class="prediction-label">
-                        Estimated Energy
-                    </div>
-                    <div class="prediction-value">
-                        {energy_kwh:,.3f}
-                    </div>
-                    <div class="prediction-unit">
-                        kWh for {duration_minutes:g} minutes
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-            st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-            st.markdown("### Configuration Used")
-
-            display_input = input_data.T.reset_index()
-            display_input.columns = ["Feature", "Value"]
-
-            display_input = display_input[
-                display_input["Value"].notna()
-            ]
-
-            st.dataframe(
-                display_input,
-                use_container_width=True,
-                hide_index=True
-            )
-
-            st.session_state["latest_power"] = predicted_power
-            st.session_state["latest_energy"] = energy_kwh
-
-        except Exception as e:
-
-            st.error(
-                "The prediction could not be generated for this configuration."
-            )
-
-            st.exception(e)
-
-
-# ============================================================
-# CARBON ANALYSIS
-# ============================================================
-
-elif page == "Carbon Analysis":
-
-    st.markdown(
-        '<div class="section-title">Carbon Analysis</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section-subtitle">'
-        'Translating predicted electricity demand into location-dependent CO₂e scenarios.'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown("""
-    <div class="info-card">
-        <h4>How this calculation works</h4>
-        <p>
-        AERIS predicts electricity demand through mean power. Energy is then
-        calculated for a selected runtime. Estimated emissions are obtained by
-        multiplying that energy demand by the annual electricity carbon intensity
-        of the selected country.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("### Research Test-Set Scenario")
-
-    test_energy = 7.1027
-
-    country_comparison = carbon_data[
-        carbon_data["Entity"].isin(
-            ["India", "United States", "France", "Germany"]
-        )
-    ].copy()
-
-    if "Carbon intensity" not in country_comparison.columns:
-        carbon_column = [
-            c for c in country_comparison.columns
-            if "carbon" in c.lower()
-        ][0]
-        country_comparison["Carbon intensity"] = (
-            country_comparison[carbon_column]
-        )
-
-    country_comparison["Estimated emissions (kg CO2e)"] = (
-        test_energy
-        * country_comparison["Carbon intensity"]
-        / 1000
-    )
-
-    country_comparison = country_comparison.sort_values(
-        "Estimated emissions (kg CO2e)"
-    )
-
-    st.write(
-        "The following scenario uses the same predicted 7.1027 kWh of electricity "
-        "demand for every country. Only the electricity carbon intensity changes."
-    )
-
-    st.dataframe(
-        country_comparison[
-            [
-                "Entity",
-                "Year",
-                "Carbon intensity",
-                "Estimated emissions (kg CO2e)"
-            ]
-        ].style.format({
-            "Carbon intensity": "{:.2f}",
-            "Estimated emissions (kg CO2e)": "{:.3f}"
-        }),
-        use_container_width=True,
-        hide_index=True
-    )
-
-    fig = px.bar(
-        country_comparison,
-        x="Entity",
-        y="Estimated emissions (kg CO2e)",
-        template="simple_white"
-    )
-
-    fig.update_layout(
-        height=400,
-        xaxis_title="Country",
-        yaxis_title="Estimated CO₂e (kg)"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.markdown('<div class="soft-divider"></div>', unsafe_allow_html=True)
-
-    st.markdown("### Interactive Carbon Scenario")
-
-    p1, p2 = st.columns(2)
-
-    with p1:
-
-        if "latest_energy" in st.session_state:
-            selected_energy = st.number_input(
-                "Electricity demand (kWh)",
-                min_value=0.001,
-                value=float(st.session_state["latest_energy"]),
-                step=0.1
-            )
-        else:
-            selected_energy = st.number_input(
-                "Electricity demand (kWh)",
-                min_value=0.001,
-                value=1.0,
-                step=0.1
-            )
-
-    with p2:
-
-        available_countries = sorted(
-            country_comparison["Entity"].unique().tolist()
-        )
-
-        selected_country = st.selectbox(
-            "Country",
-            available_countries
-        )
-
-    selected_row = country_comparison[
-        country_comparison["Entity"] == selected_country
-    ].iloc[0]
-
-    intensity = float(selected_row["Carbon intensity"])
-
-    estimated_emissions = (
-        selected_energy * intensity / 1000
-    )
-
-    st.markdown(
-        f"""
-        <div class="prediction-result">
-            <div class="prediction-label">
-                Estimated emissions in {selected_country}
-            </div>
-            <div class="prediction-value">
-                {estimated_emissions:.3f}
-            </div>
-            <div class="prediction-unit">
-                kg CO₂e · electricity intensity: {intensity:.2f} gCO₂e/kWh
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.caption(
-        "Country values represent annual electricity carbon intensity and should "
-        "not be interpreted as hourly grid-intensity or scheduling data."
     )
 
 
@@ -1502,57 +1481,33 @@ elif page == "About":
     )
 
     st.markdown(
-        '<div class="section-subtitle">'
-        'Research methodology, scope and reproducibility.'
+        '<div class="section-description">'
+        'Research methodology, model scope and limitations.'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown("""
-    <div class="info-card">
-        <h4>AERIS — AI Energy Requirement Intelligence System</h4>
-        <p>
-        AERIS is a predictive modelling framework developed to estimate the
-        power consumption of AI training workloads from workload configuration
-        and hardware characteristics.
-        </p>
+    <div class="card">
 
-        <p>
-        The project evaluates both conventional machine learning and deep
-        learning approaches and uses model interpretation techniques to examine
-        which predictors contribute most strongly to predictive performance.
-        </p>
+    <h3>AERIS — AI Energy Requirement Intelligence System</h3>
+
+    <p>
+    AERIS is a predictive modelling framework designed to estimate the
+    electricity requirements of AI training workloads from workload
+    configuration and hardware characteristics.
+    </p>
+
+    <p>
+    The project compares conventional machine learning with deep learning,
+    evaluates predictive performance using grouped validation, and applies
+    SHAP-based interpretation to understand the model's predictions.
+    </p>
+
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### Methodology")
-
-    methodology = pd.DataFrame({
-        "Stage": [
-            "Problem definition",
-            "Data understanding",
-            "Preprocessing",
-            "Model development",
-            "Validation",
-            "Interpretation",
-            "Carbon analysis"
-        ],
-        "Approach": [
-            "Predict mean AI training power",
-            "EDA and statistical analysis",
-            "Imputation, encoding and scaling",
-            "Linear Regression, Random Forest, MLP",
-            "Grouped train-test + 5-fold Group CV",
-            "SHAP + permutation importance",
-            "Electricity carbon-intensity scenarios"
-        ]
-    })
-
-    st.dataframe(
-        methodology,
-        use_container_width=True,
-        hide_index=True
-    )
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     st.markdown("### Final Model")
 
@@ -1585,24 +1540,50 @@ elif page == "About":
         hide_index=True
     )
 
-    st.markdown("### Scope and Limitations")
+    st.markdown("### Research Workflow")
 
-    limitations = [
-        "The model predicts mean power rather than instantaneous power.",
-        "The primary predictors are configuration and hardware characteristics available before or at workload setup.",
-        "The configuration-only model cannot capture temporal runtime behaviour within a training session.",
-        "The dataset does not provide a perfectly balanced combination of every workload and hardware platform.",
-        "Feature importance indicates predictive association rather than causation.",
-        "Carbon estimates depend on the electricity carbon-intensity scenario selected.",
-        "Annual country-level carbon intensity should not be interpreted as real-time grid intensity."
-    ]
+    workflow = pd.DataFrame({
+        "Stage": [
+            "Problem Definition",
+            "Data Understanding",
+            "Preprocessing",
+            "Model Development",
+            "Validation",
+            "Interpretation",
+            "Carbon Analysis"
+        ],
+        "Approach": [
+            "Predict mean AI training power",
+            "EDA and statistical analysis",
+            "Imputation and encoding",
+            "Linear Regression, Random Forest, MLP",
+            "Grouped train-test + GroupKFold",
+            "SHAP analysis",
+            "Electricity carbon-intensity scenarios"
+        ]
+    })
 
-    for limitation in limitations:
-        st.markdown(
-            f'<div style="margin:0.65rem 0;color:#475467;">'
-            f'• {limitation}</div>',
-            unsafe_allow_html=True
-        )
+    st.dataframe(
+        workflow,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.markdown("### Limitations")
+
+    st.write(
+        "AERIS predicts mean power rather than instantaneous power. "
+        "Because the main predictors describe workload configuration and "
+        "hardware, the model cannot capture all temporal runtime behaviour. "
+        "The dataset also does not contain perfectly balanced combinations "
+        "of every workload and hardware platform."
+    )
+
+    st.write(
+        "Carbon estimates are downstream scenario calculations. They depend "
+        "on the selected electricity carbon intensity and should not be "
+        "interpreted as real-time grid emissions."
+    )
 
     st.markdown("### Data Source")
 
@@ -1616,11 +1597,9 @@ elif page == "About":
         "Dataset DOI: 10.6084/m9.figshare.31654879"
     )
 
-    st.markdown("### Carbon Data Source")
-
     st.write(
-        "Electricity carbon-intensity data were obtained from Our World in Data's "
-        "annual electricity carbon-intensity dataset."
+        "Electricity carbon-intensity data: Our World in Data, annual "
+        "electricity carbon intensity dataset."
     )
 
 
@@ -1630,6 +1609,6 @@ elif page == "About":
 
 st.markdown("""
 <div class="footer">
-    AERIS · AI Energy Requirement Intelligence System · Research Prototype
+    AERIS · AI Energy Requirement Intelligence System · Research Project
 </div>
 """, unsafe_allow_html=True)
